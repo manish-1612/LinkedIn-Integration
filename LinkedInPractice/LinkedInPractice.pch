@@ -15,10 +15,10 @@
 
 
 
-#define LinkedInApiKey                              @"753a7gzyeu2gdp"
-#define LinkedInSecretKey                           @"pUhUGxuIad2t21Rm"
-#define LinkedInOAuthUserToken                      @"8cafe120-f32c-4a23-8d99-d3efdaad2c9f"
-#define LinkedInOAuthUserSecret                     @"dbf496e1-83d8-4196-94d1-1fe9526112fd"
+#define LinkedInApiKey                              @"LinkedIn API key"
+#define LinkedInSecretKey                           @"LinkedIn Secret key"
+#define LinkedInOAuthUserToken                      @"LinkedIn Oauth user token"
+#define LinkedInOAuthUserSecret                     @"LinkedIn Oauth user secret"
 
 
 
