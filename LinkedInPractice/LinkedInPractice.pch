@@ -1,0 +1,25 @@
+//
+//  LinkedInPractice.pch
+//  LinkedInPractice
+//
+//  Created by Manish Kumar on 25/06/15.
+//  Copyright (c) 2015 Innofied Solutions Pvt. Ltd. All rights reserved.
+//
+
+#ifndef LinkedInPractice_LinkedInPractice_pch
+#define LinkedInPractice_LinkedInPractice_pch
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+
+
+
+#define LinkedInApiKey                              @"753a7gzyeu2gdp"
+#define LinkedInSecretKey                           @"pUhUGxuIad2t21Rm"
+#define LinkedInOAuthUserToken                      @"8cafe120-f32c-4a23-8d99-d3efdaad2c9f"
+#define LinkedInOAuthUserSecret                     @"dbf496e1-83d8-4196-94d1-1fe9526112fd"
+
+
+
+#endif
