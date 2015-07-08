@@ -205,8 +205,11 @@
 
 
 - (void)testApiCall
-{ 
-    NSURL *url = [NSURL URLWithString:@"https://api.linkedin.com/v1/people/~:(id,first-name,last-name,maiden-name,formatted-name,email-address,location:(name),industry,public-profile-url,picture-url,primary-twitter-account,summary,phone-numbers,date-of-birth,main-address,positions:(title,company:(name)),educations:(school-name,field-of-study,start-date,end-date,degree))"];
+{     
+    NSString *urlString = @"https://api.linkedin.com/v1/people/~:(id,num-connections,picture-url,formatted-name,email-address,industry,public-profile-url,primary-twitter-account,summary,phone-numbers,date-of-birth,main-address,positions:(title,company:(name)))?format=json";
+    
+    NSURL *url = [NSURL URLWithString:urlString];
+
     
     OAMutableURLRequest *request =
             [[OAMutableURLRequest alloc] initWithURL:url

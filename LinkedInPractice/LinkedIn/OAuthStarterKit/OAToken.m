@@ -44,35 +44,35 @@
 #pragma mark init
 
 - (id)init {
-	return [self initWithKey:nil secret:nil];
+    return [self initWithKey:nil secret:nil];
 }
 
 - (id)initWithKey:(NSString *)aKey secret:(NSString *)aSecret {
-	return [self initWithKey:aKey secret:aSecret session:nil verifier:nil duration:nil
-				  attributes:nil created:nil renewable:NO];
+    return [self initWithKey:aKey secret:aSecret session:nil verifier:nil duration:nil
+                  attributes:nil created:nil renewable:NO];
 }
 
-- (id)initWithKey:(NSString *)aKey 
-           secret:(NSString *)aSecret 
+- (id)initWithKey:(NSString *)aKey
+           secret:(NSString *)aSecret
           session:(NSString *)aSession
          verifier:(NSString *)aVerifier
-		 duration:(NSNumber *)aDuration 
-       attributes:(NSDictionary *)theAttributes 
+         duration:(NSNumber *)aDuration
+       attributes:(NSDictionary *)theAttributes
           created:(NSDate *)creation
-		renewable:(BOOL)renew 
+        renewable:(BOOL)renew
 {
-	[super init];
-	self.key = aKey;
-	self.secret = aSecret;
-	self.session = aSession;
+    [super init];
+    self.key = aKey;
+    self.secret = aSecret;
+    self.session = aSession;
     self.verifier = aVerifier;
-	self.duration = aDuration;
-	self.attributes = [theAttributes mutableCopy];
-	created = [creation retain];
-	renewable = renew;
-	forRenewal = NO;
-
-	return self;
+    self.duration = aDuration;
+    self.attributes = [theAttributes mutableCopy];
+    created = [creation retain];
+    renewable = renew;
+    forRenewal = NO;
+    
+    return self;
 }
 
 - (void)setVerifierWithUrl:(NSURL *)aURL
@@ -80,92 +80,92 @@
     NSString *query = [aURL query];
     NSArray *pairs = [query componentsSeparatedByString:@"&"];
     
-	for (NSString *pair in pairs) 
+    for (NSString *pair in pairs)
     {
         NSArray *elements = [pair componentsSeparatedByString:@"="];
-        if ([[elements objectAtIndex:0] isEqualToString:@"oauth_verifier"]) 
+        if ([[elements objectAtIndex:0] isEqualToString:@"oauth_verifier"])
         {
             self.verifier = [elements objectAtIndex:1];
-        } 
+        }
     }
 }
 
-- (id)initWithHTTPResponseBody:(const NSString *)body 
+- (id)initWithHTTPResponseBody:(const NSString *)body
 {
     NSString *aKey = nil;
-	NSString *aSecret = nil;
-	NSString *aSession = nil;
+    NSString *aSecret = nil;
+    NSString *aSession = nil;
     NSString *aVerifier = nil;
-	NSNumber *aDuration = nil;
-	NSDate *creationDate = nil;
-	NSDictionary *attrs = nil;
-	BOOL renew = NO;
-	NSArray *pairs = [body componentsSeparatedByString:@"&"];
-
-	for (NSString *pair in pairs) 
+    NSNumber *aDuration = nil;
+    NSDate *creationDate = nil;
+    NSDictionary *attrs = nil;
+    BOOL renew = NO;
+    NSArray *pairs = [body componentsSeparatedByString:@"&"];
+    
+    for (NSString *pair in pairs)
     {
         NSArray *elements = [pair componentsSeparatedByString:@"="];
-        if ([[elements objectAtIndex:0] isEqualToString:@"oauth_token"]) 
+        if ([[elements objectAtIndex:0] isEqualToString:@"oauth_token"])
         {
             aKey = [elements objectAtIndex:1];
-        } 
-        else if ([[elements objectAtIndex:0] isEqualToString:@"oauth_token_secret"]) 
+        }
+        else if ([[elements objectAtIndex:0] isEqualToString:@"oauth_token_secret"])
         {
             aSecret = [elements objectAtIndex:1];
-        } 
-        else if ([[elements objectAtIndex:0] isEqualToString:@"oauth_verifier"]) 
+        }
+        else if ([[elements objectAtIndex:0] isEqualToString:@"oauth_verifier"])
         {
             aVerifier = [elements objectAtIndex:1];
-        } 
-        else if ([[elements objectAtIndex:0] isEqualToString:@"oauth_session_handle"]) 
+        }
+        else if ([[elements objectAtIndex:0] isEqualToString:@"oauth_session_handle"])
         {
-			aSession = [elements objectAtIndex:1];
-		} 
-        else if ([[elements objectAtIndex:0] isEqualToString:@"oauth_token_duration"]) 
+            aSession = [elements objectAtIndex:1];
+        }
+        else if ([[elements objectAtIndex:0] isEqualToString:@"oauth_token_duration"])
         {
-			aDuration = [[self class] durationWithString:[elements objectAtIndex:1]];
-			creationDate = [NSDate date];
-		} 
-        else if ([[elements objectAtIndex:0] isEqualToString:@"oauth_token_attributes"]) 
+            aDuration = [[self class] durationWithString:[elements objectAtIndex:1]];
+            creationDate = [NSDate date];
+        }
+        else if ([[elements objectAtIndex:0] isEqualToString:@"oauth_token_attributes"])
         {
-			attrs = [[self class] attributesWithString:[[elements objectAtIndex:1] decodedURLString]];
-		} 
-        else if ([[elements objectAtIndex:0] isEqualToString:@"oauth_token_renewable"]) 
+            attrs = [[self class] attributesWithString:[[elements objectAtIndex:1] decodedURLString]];
+        }
+        else if ([[elements objectAtIndex:0] isEqualToString:@"oauth_token_renewable"])
         {
-			NSString *lowerCase = [[elements objectAtIndex:1] lowercaseString];
-			if ([lowerCase isEqualToString:@"true"] || [lowerCase isEqualToString:@"t"]) {
-				renew = YES;
-			}
-		}
+            NSString *lowerCase = [[elements objectAtIndex:1] lowercaseString];
+            if ([lowerCase isEqualToString:@"true"] || [lowerCase isEqualToString:@"t"]) {
+                renew = YES;
+            }
+        }
     }
     
-    return [self initWithKey:aKey 
-                      secret:aSecret 
-                     session:aSession 
+    return [self initWithKey:aKey
+                      secret:aSecret
+                     session:aSession
                     verifier:aVerifier
                     duration:aDuration
-				  attributes:attrs 
-                     created:creationDate 
+                  attributes:attrs
+                     created:creationDate
                    renewable:renew];
 }
 
 - (id)initWithUserDefaultsUsingServiceProviderName:(const NSString *)provider prefix:(const NSString *)prefix {
-	[super init];
-	self.key = [OAToken loadSetting:@"key" provider:provider prefix:prefix];
-	self.secret = [OAToken loadSetting:@"secret" provider:provider prefix:prefix];
-	self.session = [OAToken loadSetting:@"session" provider:provider prefix:prefix];
+    [super init];
+    self.key = [OAToken loadSetting:@"key" provider:provider prefix:prefix];
+    self.secret = [OAToken loadSetting:@"secret" provider:provider prefix:prefix];
+    self.session = [OAToken loadSetting:@"session" provider:provider prefix:prefix];
     self.verifier = [OAToken loadSetting:@"verifier" provider:provider prefix:prefix];
-	self.duration = [OAToken loadSetting:@"duration" provider:provider prefix:prefix];
-	self.attributes = [OAToken loadSetting:@"attributes" provider:provider prefix:prefix];
-	created = [OAToken loadSetting:@"created" provider:provider prefix:prefix];
-	renewable = [[OAToken loadSetting:@"renewable" provider:provider prefix:prefix] boolValue];
-
-	if (![self isValid]) {
-		[self autorelease];
-		return nil;
-	}
-	
-	return self;
+    self.duration = [OAToken loadSetting:@"duration" provider:provider prefix:prefix];
+    self.attributes = [OAToken loadSetting:@"attributes" provider:provider prefix:prefix];
+    created = [OAToken loadSetting:@"created" provider:provider prefix:prefix];
+    renewable = [[OAToken loadSetting:@"renewable" provider:provider prefix:prefix] boolValue];
+    
+    if (![self isValid]) {
+        [self autorelease];
+        return nil;
+    }
+    
+    return self;
 }
 
 #pragma mark dealloc
@@ -175,53 +175,53 @@
     self.secret = nil;
     self.duration = nil;
     self.attributes = nil;
-	[super dealloc];
+    [super dealloc];
 }
 
 #pragma mark settings
 
 - (BOOL)isValid {
-	return (key != nil && ![key isEqualToString:@""] && secret != nil && ![secret isEqualToString:@""]);
+    return (key != nil && ![key isEqualToString:@""] && secret != nil && ![secret isEqualToString:@""]);
 }
 
 - (int)storeInUserDefaultsWithServiceProviderName:(const NSString *)provider prefix:(const NSString *)prefix {
-	[OAToken saveSetting:@"key" object:key provider:provider prefix:prefix];
-	[OAToken saveSetting:@"secret" object:secret provider:provider prefix:prefix];
-	[OAToken saveSetting:@"created" object:created provider:provider prefix:prefix];
-	[OAToken saveSetting:@"duration" object:duration provider:provider prefix:prefix];
-	[OAToken saveSetting:@"session" object:session provider:provider prefix:prefix];
+    [OAToken saveSetting:@"key" object:key provider:provider prefix:prefix];
+    [OAToken saveSetting:@"secret" object:secret provider:provider prefix:prefix];
+    [OAToken saveSetting:@"created" object:created provider:provider prefix:prefix];
+    [OAToken saveSetting:@"duration" object:duration provider:provider prefix:prefix];
+    [OAToken saveSetting:@"session" object:session provider:provider prefix:prefix];
     [OAToken saveSetting:@"verifier" object:verifier provider:provider prefix:prefix];
-	[OAToken saveSetting:@"attributes" object:attributes provider:provider prefix:prefix];
-	[OAToken saveSetting:@"renewable" object:renewable ? @"t" : @"f" provider:provider prefix:prefix];
-	
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	return(0);
+    [OAToken saveSetting:@"attributes" object:attributes provider:provider prefix:prefix];
+    [OAToken saveSetting:@"renewable" object:renewable ? @"t" : @"f" provider:provider prefix:prefix];
+    
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    return(0);
 }
 
 #pragma mark duration
 
 - (void)setDurationWithString:(NSString *)aDuration {
-	self.duration = [[self class] durationWithString:aDuration];
+    self.duration = [[self class] durationWithString:aDuration];
 }
 
 - (BOOL)hasExpired
 {
-	return created && [created timeIntervalSinceNow] > [duration intValue];
+    return created && [created timeIntervalSinceNow] > [duration intValue];
 }
 
 - (BOOL)isRenewable
 {
-	return session && renewable && created && [created timeIntervalSinceNow] < (2 * [duration intValue]);
+    return session && renewable && created && [created timeIntervalSinceNow] < (2 * [duration intValue]);
 }
 
 
 #pragma mark attributes
 
 - (void)setAttribute:(const NSString *)aKey value:(const NSString *)aAttribute {
-	if (!attributes) {
-		attributes = [[NSMutableDictionary alloc] init];
-	}
-	[attributes setObject: aAttribute forKey: aKey];
+    if (!attributes) {
+        attributes = [[NSMutableDictionary alloc] init];
+    }
+    [attributes setObject: aAttribute forKey: aKey];
 }
 
 //- (void)setAttributes:(NSDictionary *)theAttributes {
@@ -231,159 +231,159 @@
 //	}else {
 //		attributes = nil;
 //	}
-//	
+//
 //}
 
 
 
 - (BOOL)hasAttributes {
-	return (attributes && [attributes count] > 0);
+    return (attributes && [attributes count] > 0);
 }
 
 - (NSString *)attributeString {
-	if (![self hasAttributes]) {
-		return @"";
-	}
-	
-	NSMutableArray *chunks = [[NSMutableArray alloc] init];
-	for(NSString *aKey in self->attributes) {
-		[chunks addObject:[NSString stringWithFormat:@"%@:%@", aKey, [attributes objectForKey:aKey]]];
-	}
-	NSString *attrs = [chunks componentsJoinedByString:@";"];
-	[chunks release];
-	return attrs;
+    if (![self hasAttributes]) {
+        return @"";
+    }
+    
+    NSMutableArray *chunks = [[NSMutableArray alloc] init];
+    for(NSString *aKey in self->attributes) {
+        [chunks addObject:[NSString stringWithFormat:@"%@:%@", aKey, [attributes objectForKey:aKey]]];
+    }
+    NSString *attrs = [chunks componentsJoinedByString:@";"];
+    [chunks release];
+    return attrs;
 }
 
 - (NSString *)attribute:(NSString *)aKey
 {
-	return [attributes objectForKey:aKey];
+    return [attributes objectForKey:aKey];
 }
 
 - (void)setAttributesWithString:(NSString *)theAttributes
 {
-	self.attributes = [[[self class] attributesWithString:theAttributes] mutableCopy];
+    self.attributes = [[[self class] attributesWithString:theAttributes] mutableCopy];
 }
 
 - (NSDictionary *)parameters
 {
-	NSMutableDictionary *params = [[[NSMutableDictionary alloc] init] autorelease];
-
-	if (key) 
+    NSMutableDictionary *params = [[[NSMutableDictionary alloc] init] autorelease];
+    
+    if (key)
     {
-		[params setObject:key forKey:@"oauth_token"];
-		if ([self isForRenewal]) 
+        [params setObject:key forKey:@"oauth_token"];
+        if ([self isForRenewal])
         {
-			[params setObject:session forKey:@"oauth_session_handle"];
-		}
-	} 
-    else 
+            [params setObject:session forKey:@"oauth_session_handle"];
+        }
+    }
+    else
     {
-		if (duration) 
+        if (duration)
         {
-			[params setObject:[duration stringValue] forKey: @"oauth_token_duration"];
-		}
-		if ([attributes count]) 
+            [params setObject:[duration stringValue] forKey: @"oauth_token_duration"];
+        }
+        if ([attributes count])
         {
-			[params setObject:[self attributeString] forKey:@"oauth_token_attributes"];
-		}
-	}
+            [params setObject:[self attributeString] forKey:@"oauth_token_attributes"];
+        }
+    }
     
     if (verifier)
     {
         [params setObject:verifier forKey:@"oauth_verifier"];
     }
-	return params;
+    return params;
 }
 
 #pragma mark comparisions
 
 - (BOOL)isEqual:(id)object {
-	if([object isKindOfClass:[self class]]) {
-		return [self isEqualToToken:(OAToken *)object];
-	}
-	return NO;
+    if([object isKindOfClass:[self class]]) {
+        return [self isEqualToToken:(OAToken *)object];
+    }
+    return NO;
 }
 
 - (BOOL)isEqualToToken:(OAToken *)aToken {
-	/* Since ScalableOAuth determines that the token may be
-	 renewed using the same key and secret, we must also
-	 check the creation date */
-	if ([self.key isEqualToString:aToken.key] &&
-		[self.secret isEqualToString:aToken.secret]) {
-		/* May be nil */
-		if (created == aToken->created || [created isEqualToDate:aToken->created]) {
-			return YES;
-		}
-	}
-	
-	return NO;
+    /* Since ScalableOAuth determines that the token may be
+     renewed using the same key and secret, we must also
+     check the creation date */
+    if ([self.key isEqualToString:aToken.key] &&
+        [self.secret isEqualToString:aToken.secret]) {
+        /* May be nil */
+        if (created == aToken->created || [created isEqualToDate:aToken->created]) {
+            return YES;
+        }
+    }
+    
+    return NO;
 }
-			
+
 #pragma mark class_functions
-			
+
 + (NSString *)settingsKey:(NSString *)name provider:(NSString *)provider prefix:(NSString *)prefix {
-	return [NSString stringWithFormat:@"OAUTH_%@_%@_%@", provider, prefix, [name uppercaseString]];
+    return [NSString stringWithFormat:@"OAUTH_%@_%@_%@", provider, prefix, [name uppercaseString]];
 }
-			
+
 + (id)loadSetting:(NSString *)name provider:(NSString *)provider prefix:(NSString *)prefix {
-	return [[NSUserDefaults standardUserDefaults] objectForKey:[self settingsKey:name
-																		provider:provider
-																		  prefix:prefix]];
+    return [[NSUserDefaults standardUserDefaults] objectForKey:[self settingsKey:name
+                                                                        provider:provider
+                                                                          prefix:prefix]];
 }
-			
+
 + (void)saveSetting:(NSString *)name object:(id)object provider:(NSString *)provider prefix:(NSString *)prefix {
-	[[NSUserDefaults standardUserDefaults] setObject:object forKey:[self settingsKey:name
-																			provider:provider
-																			  prefix:prefix]];
+    [[NSUserDefaults standardUserDefaults] setObject:object forKey:[self settingsKey:name
+                                                                            provider:provider
+                                                                              prefix:prefix]];
 }
-	
+
 + (void)removeFromUserDefaultsWithServiceProviderName:(NSString *)provider prefix:(NSString *)prefix {
-	NSArray *keys = [NSArray arrayWithObjects:@"key", @"secret", @"created", @"duration", @"session", @"verifier", @"attributes", @"renewable", nil];
-	for(NSString *name in keys) {
-		[[NSUserDefaults standardUserDefaults] removeObjectForKey:[OAToken settingsKey:name provider:provider prefix:prefix]];
-	}
+    NSArray *keys = [NSArray arrayWithObjects:@"key", @"secret", @"created", @"duration", @"session", @"verifier", @"attributes", @"renewable", nil];
+    for(NSString *name in keys) {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:[OAToken settingsKey:name provider:provider prefix:prefix]];
+    }
 }
-			
+
 + (NSNumber *)durationWithString:(NSString *)aDuration {
-	NSUInteger length = [aDuration length];
-	unichar c = toupper([aDuration characterAtIndex:length - 1]);
-	int mult;
-	if (c >= '0' && c <= '9') {
-		return [NSNumber numberWithInt:[aDuration intValue]];
-	}
-	if (c == 'S') {
-		mult = 1;
-	} else if (c == 'H') {
-		mult = 60 * 60;
-	} else if (c == 'D') {
-		mult = 60 * 60 * 24;
-	} else if (c == 'W') {
-		mult = 60 * 60 * 24 * 7;
-	} else if (c == 'M') {
-		mult = 60 * 60 * 24 * 30;
-	} else if (c == 'Y') {
-		mult = 60 * 60 * 365;
-	} else {
-		mult = 1;
-	}
-	
-	return [NSNumber numberWithInt: mult * [[aDuration substringToIndex:length - 1] intValue]];
+    NSUInteger length = [aDuration length];
+    unichar c = toupper([aDuration characterAtIndex:length - 1]);
+    int mult;
+    if (c >= '0' && c <= '9') {
+        return [NSNumber numberWithInt:[aDuration intValue]];
+    }
+    if (c == 'S') {
+        mult = 1;
+    } else if (c == 'H') {
+        mult = 60 * 60;
+    } else if (c == 'D') {
+        mult = 60 * 60 * 24;
+    } else if (c == 'W') {
+        mult = 60 * 60 * 24 * 7;
+    } else if (c == 'M') {
+        mult = 60 * 60 * 24 * 30;
+    } else if (c == 'Y') {
+        mult = 60 * 60 * 365;
+    } else {
+        mult = 1;
+    }
+    
+    return [NSNumber numberWithInt: mult * [[aDuration substringToIndex:length - 1] intValue]];
 }
 
 + (NSDictionary *)attributesWithString:(NSString *)theAttributes {
-	NSArray *attrs = [theAttributes componentsSeparatedByString:@";"];
-	NSMutableDictionary *dct = [[NSMutableDictionary alloc] init];
-	for (NSString *pair in attrs) {
-		NSArray *elements = [pair componentsSeparatedByString:@":"];
-		[dct setObject:[elements objectAtIndex:1] forKey:[elements objectAtIndex:0]];
-	}
-	return [dct autorelease];
+    NSArray *attrs = [theAttributes componentsSeparatedByString:@";"];
+    NSMutableDictionary *dct = [[NSMutableDictionary alloc] init];
+    for (NSString *pair in attrs) {
+        NSArray *elements = [pair componentsSeparatedByString:@":"];
+        [dct setObject:[elements objectAtIndex:1] forKey:[elements objectAtIndex:0]];
+    }
+    return [dct autorelease];
 }
 
 #pragma mark description
 
 - (NSString *)description {
-	return [NSString stringWithFormat:@"oauth_token \"%@\" oauth_token_secret \"%@\" oauth_verifier \"%@\"", key, secret, verifier];
+    return [NSString stringWithFormat:@"oauth_token \"%@\" oauth_token_secret \"%@\" oauth_verifier \"%@\"", key, secret, verifier];
 }
 
 @end

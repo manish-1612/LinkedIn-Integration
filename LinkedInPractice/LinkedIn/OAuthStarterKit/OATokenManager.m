@@ -11,12 +11,7 @@
 #import "OAProblem.h"
 #import "OACall.h"
 #import "OATokenManager.h"
-
-#ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
-
-#import<UIKit/UIKit.h> 
-
-#endif
+#import <UIKit/UIKit.h>
 
 @interface OATokenManager (Private)
 
@@ -260,8 +255,7 @@
 		 before the token is authorized (useful for iPhone) */
 		NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@authorize?oauth_token=%@&oauth_callback=%@",
 										   oauthBase, token.key, callback]];
-		
-        [[UIApplication sharedApplication] openURL:url];
+		[[UIApplication sharedApplication] openURL:url];
 
 	}
 	[call release];
